@@ -29,13 +29,24 @@ abstract class modArticlesMostpopularHelper
 		
 		
     // Select the required fields from the table.
-    $query->select('a.id, a.title, a.alias, a.introtext, a.catid, p.1_day_stats, p.7_day_stats, p.30_day_stats, p.all_time_stats');
+    $query->select('a.id, a.title, a.alias, a.introtext, a.catid, a.created, a.created_by, a.created_by_alias, a.modified, a.modified_by, a.publish_up, a.publish_down, a.images, a.urls, a.attribs, p.1_day_stats, p.7_day_stats, p.30_day_stats, p.all_time_stats');
     $query->from('#__content AS a');
     $query->join('INNER','#__mostpopular AS p ON a.id=p.content_id');
 
     // Join over the categories.
     $query->select('c.title AS category_title, c.path AS category_route, c.access AS category_access, c.alias AS category_alias');
     $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
+
+
+
+    /** TODO: Need to add the following
+
+      - parent_alias 
+      - parent_id
+      - access
+      
+
+    */
 
     // Filter by a single or group of categories (It does not include subcategories)
     $categoryId = $params->get('catid', array());
@@ -125,6 +136,15 @@ abstract class modArticlesMostpopularHelper
     foreach ($items as &$item) {
       $item->slug = $item->id.':'.$item->alias;
       $item->catslug = $item->catid.':'.$item->category_alias;
+
+
+      // Get the article params
+      $articleParams = new JRegistry;
+      $articleParams->loadString($item->attribs);
+      $item->alternative_readmore = $articleParams->get('alternative_readmore');
+      $item->layout = $articleParams->get('layout');
+      $item->params = $articleParams;
+
 
       if ($access || in_array($item->access, $authorised)) {
 	// We know that user has the privilege to view the article

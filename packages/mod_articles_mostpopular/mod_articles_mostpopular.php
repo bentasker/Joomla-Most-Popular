@@ -18,3 +18,4 @@ $show_hits = $params->get('show_hits', 0);
 $ordering_range = $params->get('ordering_range', 0);
 
 require JModuleHelper::getLayoutPath('mod_articles_mostpopular', $params->get('layout', 'default'));
+//require JModuleHelper::getLayoutPath('mod_articles_popular', $params->get('layout', 'default')); // Used for testing
