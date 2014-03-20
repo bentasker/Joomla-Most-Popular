@@ -5,7 +5,7 @@ Joomla Most Popular by Date Range
 Credit
 -------
 
-Most of the work for this module was already in place, see [the original by Marcelo Canina on JoomlaCode] (http://code.joomla.org/gf/project/mostpopular_art/frs/?action=FrsRelease$
+Most of the work for this module was already in place, see [https://github.com/marcanuy/Joomla-Most-Popular]
 The adaptations that I've made are too allow drop in replacement of the core mod_articles_popular layouts (so that overrides for things like Joomlart templates can be used).
 
 
