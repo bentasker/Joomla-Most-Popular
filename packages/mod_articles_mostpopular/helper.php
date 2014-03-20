@@ -29,7 +29,7 @@ abstract class modArticlesMostpopularHelper
 		
 		
     // Select the required fields from the table.
-    $query->select('a.id, a.title, a.alias, a.introtext, a.catid, a.created, a.created_by, a.created_by_alias, a.modified, a.modified_by, a.publish_up, a.publish_down, a.images, a.urls, a.attribs, p.1_day_stats, p.7_day_stats, p.30_day_stats, p.all_time_stats');
+    $query->select('a.id, a.title, a.alias, a.introtext, a.catid, a.created, a.created_by, a.created_by_alias, a.modified, a.modified_by, a.publish_up, a.publish_down, a.images, a.urls, a.attribs, a.access, p.1_day_stats, p.7_day_stats, p.30_day_stats, p.all_time_stats');
     $query->from('#__content AS a');
     $query->join('INNER','#__mostpopular AS p ON a.id=p.content_id');
 
@@ -37,16 +37,9 @@ abstract class modArticlesMostpopularHelper
     $query->select('c.title AS category_title, c.path AS category_route, c.access AS category_access, c.alias AS category_alias');
     $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
 
+    $query->select('parent.title as parent_title, parent.id as parent_id, parent.path as parent_route, parent.alias as parent_alias');
+    $query->join('LEFT', '#__categories as parent ON parent.id = c.parent_id');
 
-
-    /** TODO: Need to add the following
-
-      - parent_alias 
-      - parent_id
-      - access
-      
-
-    */
 
     // Filter by a single or group of categories (It does not include subcategories)
     $categoryId = $params->get('catid', array());
@@ -144,6 +137,23 @@ abstract class modArticlesMostpopularHelper
       $item->alternative_readmore = $articleParams->get('alternative_readmore');
       $item->layout = $articleParams->get('layout');
       $item->params = $articleParams;
+
+      // get display date
+      switch ($item->params->get('list_show_date'))
+      {
+	      case 'modified':
+		      $item->displayDate = $item->modified;
+		      break;
+
+	      case 'published':
+		      $item->displayDate = ($item->publish_up == 0) ? $item->created : $item->publish_up;
+		      break;
+
+	      default:
+	      case 'created':
+		      $item->displayDate = $item->created;
+		      break;
+      }
 
 
       if ($access || in_array($item->access, $authorised)) {
