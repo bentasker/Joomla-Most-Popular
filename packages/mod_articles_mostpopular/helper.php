@@ -125,6 +125,18 @@ abstract class modArticlesMostpopularHelper
     // Access filter
     $access = !JComponentHelper::getParams('com_content')->get('show_noauth');
     $authorised = JAccess::getAuthorisedViewLevels(JFactory::getUser()->get('id'));
+
+
+    // Get Menu Parameters
+    $app = JFactory::getApplication();
+    $menuId = $app->getMenu()->getActive()->id;
+    $menu =   &JSite::getMenu();
+    $itempars =  $menu->getItem($menuId)->params;
+    $menuParams = new JParameter($itempars);
+    $menuParams = $menuParams->toArray();
+    $globalParams = JComponentHelper::getParams('com_content', true);
+
+
 		
     foreach ($items as &$item) {
       $item->slug = $item->id.':'.$item->alias;
@@ -137,6 +149,34 @@ abstract class modArticlesMostpopularHelper
       $item->alternative_readmore = $articleParams->get('alternative_readmore');
       $item->layout = $articleParams->get('layout');
       $item->params = $articleParams;
+      $articleArray = array();
+
+      foreach ($menuParamsArray as $key => $value)
+      {
+	      if ($value === 'use_article')
+	      {
+		      // If the article has a value, use it
+		      if ($articleParams->get($key) != '')
+		      {
+			      // Get the value from the article
+			      $articleArray[$key] = $articleParams->get($key);
+		      }
+		      else
+		      {
+			      // Otherwise, use the global value
+			      $articleArray[$key] = $globalParams->get($key);
+		      }
+	      }
+      }
+
+      // Merge the selected article params
+      if (count($articleArray) > 0)
+      {
+	      $articleParams = new JRegistry;
+	      $articleParams->loadArray($articleArray);
+	      $item->params->merge($articleParams);
+      }     
+
 
       // get display date
       switch ($item->params->get('list_show_date'))
