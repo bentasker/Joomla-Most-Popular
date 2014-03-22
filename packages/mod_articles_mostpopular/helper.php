@@ -133,7 +133,7 @@ abstract class modArticlesMostpopularHelper
     $menu =   &JSite::getMenu();
     $itempars =  $menu->getItem($menuId)->params;
     $menuParams = new JParameter($itempars);
-    $menuParams = $menuParams->toArray();
+    $menuParamsArray = $menuParams->toArray();
     $globalParams = JComponentHelper::getParams('com_content', true);
 
 
